@@ -53,6 +53,7 @@ class MainListAdapter(private val context: Context) :
     inner class ItemViewHolder(item: View) : RecyclerView.ViewHolder(item) {
         val img: ImageView = item.findViewById(R.id.user_imageView)
         val name: TextView = item.findViewById(R.id.user_name_textView)
+        val itemNumber: TextView = item.findViewById(R.id.item_number)
         val email: TextView = item.findViewById(R.id.user_email_textView)
     }
 
@@ -81,21 +82,26 @@ class MainListAdapter(private val context: Context) :
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is MainListAdapter.ItemViewHolder) {
-            val user = getItem(position)
-            holder.name.text = "${user.firstName} ${user.lastName}"
-            holder.email.text = "${user.email}"
-            Glide.with(context)
-                .load(user.avatar)
-                .apply(
-                    RequestOptions().placeholder(R.drawable.booked_circle)
-                        .error(R.drawable.booked_circle)
-                )
-                .into(holder.img)
-        } else if (holder is MainListAdapter.LoadingViewHolder) {
-            holder.loading.visibility = View.VISIBLE
-        } else if (holder is MainListAdapter.ThankYouViewHolder) {
-            holder.thanks.visibility = View.VISIBLE
+        when (holder) {
+            is MainListAdapter.ItemViewHolder -> {
+                val user = getItem(position)
+                holder.name.text = "${user.firstName} ${user.lastName}"
+                holder.email.text = "${user.email}"
+                holder.itemNumber.text = "${position+1}"
+                Glide.with(context)
+                    .load(user.avatar)
+                    .apply(
+                        RequestOptions().placeholder(R.drawable.booked_circle)
+                            .error(R.drawable.booked_circle)
+                    )
+                    .into(holder.img)
+            }
+            is MainListAdapter.LoadingViewHolder -> {
+                holder.loading.visibility = View.VISIBLE
+            }
+            is MainListAdapter.ThankYouViewHolder -> {
+                holder.thanks.visibility = View.VISIBLE
+            }
         }
     }
 

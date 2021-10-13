@@ -2,6 +2,7 @@ package com.example.assignment
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.viewModels
@@ -50,12 +51,23 @@ class MainActivity : AppCompatActivity() {
                 visibleItemCount = layoutManager.childCount
                 totalItemCount = layoutManager.itemCount
                 pastVisiblesItems = layoutManager.findFirstVisibleItemPosition()
+
                 if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                    Log.d("XXX", "visibleItemCount ${visibleItemCount}")
+                    Log.d("XXX", "totalItemCount ${totalItemCount}")
+                    Log.d("XXX", "pastVisiblesItems ${pastVisiblesItems}")
+                    Log.d(
+                        "XXX",
+                        "visibleItemCount + pastVisiblesItems ${visibleItemCount + pastVisiblesItems}"
+                    )
+
                     if (viewModel.apiTotalItemCount.value == totalItemCount) {
                         adapter.showThankYou()
                     } else {
                         initialPage++
-                        getUserData(initialPage, 5)
+                        recyclerView.adapter?.notifyItemInserted(totalItemCount - 1)
+                        viewModel.getUserData(initialPage, 5)
+                        recyclerView.adapter?.notifyItemRemoved(totalItemCount)
                     }
                 }
             }
@@ -71,6 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserData(page: Int, perPage: Int) {
+
         adapter.notifyItemInserted(totalItemCount - 1)
         viewModel.getUserData(page, perPage)
         adapter.notifyItemRemoved(totalItemCount)
